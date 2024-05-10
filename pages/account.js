@@ -12,6 +12,15 @@ import {signIn, signOut, useSession} from 'next-auth/react';
 import { RevealWrapper } from "next-reveal";
 import { useEffect, useState } from "react";
 import styled from "styled-components";
+import Link from "next/link";
+import { ButtonStyle } from "@/components/Button";
+
+
+const StyledLink = styled(Link)`
+    margin-left: 10px;
+    ${ButtonStyle}
+`;
+
 
 const ColsWrapper = styled.div`
     display: grid;
@@ -79,7 +88,7 @@ export default function Account() {
 
     function productRemovedFromWishlist(idToRemove) {
         setWishedProducts(products =>  {
-            return [...products.filter(p => p._id.toString() !== idToRemove)];
+            return [...products.filter(p => p?._id.toString() !== idToRemove)];
         })
     }
 
@@ -91,13 +100,13 @@ export default function Account() {
             setWishlistLoaded(false);
             setOrdersLoaded(false);
             axios.get('/api/address').then(response => {
-                setName(response.data.name);
-                setEmail(response.data.email);
-                setCity(response.data.city);
-                setStreetAddress(response.data.streetAddress);
-                setZipCode(response.data.zipCode);
-                setState(response.data.state);
-                setCountry(response.data.country);
+                setName(response.data?.name);
+                setEmail(response.data?.email);
+                setCity(response.data?.city);
+                setStreetAddress(response.data?.streetAddress);
+                setZipCode(response.data?.zipCode);
+                setState(response.data?.state);
+                setCountry(response.data?.country);
                 setAddressLoaded(true);
             });
             axios.get('/api/wishlist').then(response => {
@@ -130,9 +139,22 @@ export default function Account() {
                                     )}
                                     {ordersLoaded && (
                                         <div>
-                                            {orders.length === 0 && (
-                                                <p>Login to view your orders</p>
+                                            {orders.length === 0 && session && (
+                                                <>
+                                                <p>No current orders
+                                                    <StyledLink 
+                                                    href='/products'
+                                                    outline
+                                                    primary
+                                                    >
+                                                    Expolore all products
+                                                    </StyledLink>
+                                                    </p>
+                                                </>
                                             )}
+                                              {orders.length === 0 && !session && (
+                                                    <p>Login to view your orders</p>
+                                                )}
                                             {orders.length > 0 && orders.map(o => (
                                                 <OrderDetail {...o} />
                                             ))}
@@ -150,7 +172,7 @@ export default function Account() {
                                     <WishedProductsGrid>
                                     {wishedProducts.length > 0 && wishedProducts.map(wp => (
                                         <ProductBox {...wp} 
-                                        key={wp._id}
+                                        key={wp?._id}
                                         wished={true}
                                         onRemoveFromWishlist={productRemovedFromWishlist}
                                         />

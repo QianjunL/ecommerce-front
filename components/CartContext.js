@@ -25,13 +25,16 @@ export function CartContextProvider({children}) {
 
     function removeProduct(productId) {
         setCartProducts(prev => {
-          const pos = prev.indexOf(productId);
-          if (pos !== -1) {
-            return prev.filter((value,index) => index !== pos);
-          }
-          return prev;
+            const index = prev.indexOf(productId);
+            if (index === -1) {
+                return prev;
+            }
+            const updatedCart = [...prev];
+            updatedCart.splice(index, 1);
+            ls?.setItem('cart', JSON.stringify(updatedCart));
+            return updatedCart;
         });
-      }
+    }
 
       function clearCart() {
         setCartProducts([]);

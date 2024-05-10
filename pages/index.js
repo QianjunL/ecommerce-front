@@ -19,8 +19,17 @@ export default function HomePage({featuredProduct, newProducts, wishedNewProduct
 }
 
 export async function getServerSideProps(ctx) {
-  const featuredProductSetting = await Setting.findOne({name: 'featuredProductId'});
-  const featuredProductId = featuredProductSetting.value;
+  // const featuredProductSetting = await Setting.findOne({name: 'featuredProductId'});
+
+  let featuredProductSetting;
+  try {
+    featuredProductSetting = await Setting.findOne({ name: 'featuredProductId' }).maxTimeMS(30000);
+  } catch (error) {
+    console.error('Error finding featured product setting:', error);
+    // Handle the error (e.g., return an error response)
+  }
+  
+  const featuredProductId = featuredProductSetting?.value;
   await mongooseConnect();
   const featuredProduct = await Product.findById(featuredProductId);
   const newProducts = await Product.find({}, null, {sort: {'_id':-1}, limit: 10});

@@ -132,21 +132,15 @@ export default function CartPage() {
             return ;
         }
         axios.get('/api/address').then(response => {
-            setName(response.data.name);
-            setEmail(response.data.email);
-            setCity(response.data.city);
-            setStreetAddress(response.data.streetAddress);
-            setZipCode(response.data.zipCode);
-            setState(response.data.state);
-            setCountry(response.data.country);
+            setName(response.data?.name);
+            setEmail(response.data?.email);
+            setCity(response.data?.city);
+            setStreetAddress(response.data?.streetAddress);
+            setZipCode(response.data?.zipCode);
+            setState(response.data?.state);
+            setCountry(response.data?.country);
         });
     }, [session]);
-
-    // useEffect(() => {
-    //     if (isSuccess) {
-    //         clearCart();
-    //     }
-    // }, [isSuccess, clearCart]);
 
 
     function addMoreProduct(id) {
