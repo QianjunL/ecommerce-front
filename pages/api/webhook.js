@@ -14,6 +14,7 @@ export default async function handler(req, res) {
   
     try {
       event = stripe.webhooks.constructEvent(await buffer(req), sig, endpointSecret);
+      console.log("triggered event");
     } catch (err) {
       console.error('Webhook Error:', err.message);
       res.status(400).send(`Webhook Error: ${err.message}`);
@@ -23,11 +24,13 @@ export default async function handler(req, res) {
     // Handle the event
     switch (event.type) {
       case 'checkout.session.completed':
+        console.log('successfully triggered');
         const data = event.data.object;
         console.log(data);
         const orderId = data.metadata.orderId;
+        console.log(data.metadata.orderId);
         const paid = data.payment_status === 'paid';
-        if (orderId && paid) {
+        if (orderId && paid) {  
           try {
             const result = await Order.findByIdAndUpdate(orderId, {
               paid: true,
